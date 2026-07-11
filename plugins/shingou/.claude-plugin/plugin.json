@@ -1,0 +1,6 @@
+{
+  "name": "shingou",
+  "description": "Shingou news-sentiment API skill + MCP tools",
+  "version": "0.1.0",
+  "author": { "name": "Aurion Tech" }
+}

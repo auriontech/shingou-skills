@@ -1,0 +1,18 @@
+{
+  "name": "shingou-skills",
+  "owner": { "name": "Aurion Tech" },
+  "description": "Skills and MCP tools for the Shingou news-sentiment API",
+  "plugins": [
+    {
+      "name": "shingou",
+      "source": "./plugins/shingou",
+      "description": "Use the Shingou hourly crypto news-sentiment API correctly: auth, symbols, quotas, honest use of the signal",
+      "version": "0.1.0",
+      "author": { "name": "Aurion Tech" },
+      "homepage": "https://shingou.io/docs",
+      "repository": "https://github.com/auriontech/shingou-skills",
+      "license": "MIT",
+      "keywords": ["crypto", "sentiment", "news", "trading", "mcp"]
+    }
+  ]
+}
