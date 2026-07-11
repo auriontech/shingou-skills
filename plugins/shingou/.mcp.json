@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "shingou": {
+      "type": "http",
+      "url": "${SHINGOU_MCP_URL:-https://api.shingou.io/mcp}",
+      "headers": { "x-api-key": "${SHINGOU_API_KEY:-}" }
+    }
+  }
+}

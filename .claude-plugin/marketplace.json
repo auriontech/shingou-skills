@@ -7,7 +7,7 @@
       "name": "shingou",
       "source": "./plugins/shingou",
       "description": "Use the Shingou hourly crypto news-sentiment API correctly: auth, symbols, quotas, honest use of the signal",
-      "version": "0.1.0",
+      "version": "0.2.0",
       "author": { "name": "Aurion Tech" },
       "homepage": "https://shingou.io/docs",
       "repository": "https://github.com/auriontech/shingou-skills",

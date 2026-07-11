@@ -48,7 +48,9 @@ Point your agent at
 ## MCP
 
 Connect the Shingou API as tools (`get_sentiment`, `get_sentiment_history`, `get_events`,
-`list_symbols`) over Streamable HTTP:
+`list_symbols`) over Streamable HTTP. **The Claude Code plugin configures this
+automatically** — with `SHINGOU_API_KEY` exported, the `shingou` MCP server is ready after
+`/plugin install`. To connect without the plugin:
 
 ```bash
 claude mcp add --transport http shingou https://api.shingou.io/mcp \
