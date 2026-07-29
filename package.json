@@ -1,19 +1,25 @@
 {
   "name": "@auriontech/shingou-mcp-stdio",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Stdio bridge to the Shingou remote MCP server",
   "license": "MIT",
   "repository": "https://github.com/auriontech/shingou-skills",
   "homepage": "https://shingou.io/docs/agents",
   "type": "module",
   "bin": {
-    "shingou-mcp-stdio": "./src/stdio-proxy.ts"
+    "shingou-mcp-stdio": "src/stdio-proxy.mjs"
   },
   "scripts": {
     "test": "node --test test/proxy.test.ts"
   },
   "engines": {
-    "node": ">=24"
+    "node": ">=18"
   },
-  "keywords": ["mcp", "crypto", "sentiment", "news", "trading"]
+  "keywords": [
+    "mcp",
+    "crypto",
+    "sentiment",
+    "news",
+    "trading"
+  ]
 }

@@ -13,15 +13,17 @@
  *
  * stdout carries protocol frames and nothing else. Diagnostics go to stderr,
  * because one stray byte on stdout desynchronises the client for good.
+ *
+ * Plain JavaScript on purpose. Node refuses to strip types for files under
+ * node_modules, so a TypeScript entrypoint cannot run from an installed
+ * package on any Node version. Seven annotations were not worth a build step.
  */
-
-type JsonRpcId = string | number | null;
 
 const ENDPOINT = process.env.SHINGOU_MCP_URL || "https://api.shingou.io/mcp";
 const API_KEY = process.env.SHINGOU_API_KEY ?? "";
-const VERSION = "0.3.0";
+const VERSION = "0.3.1";
 
-const headers: Record<string, string> = {
+const headers = {
   "content-type": "application/json",
   accept: "application/json, text/event-stream",
   "user-agent": `shingou-mcp-stdio/${VERSION}`,
@@ -35,16 +37,17 @@ if (API_KEY) headers["x-api-key"] = API_KEY;
  * One value out, always on exactly one line: re-serialized so pretty-printing
  * upstream can never break the line framing this protocol depends on.
  */
-function emit(value: unknown): void {
+function emit(value) {
   process.stdout.write(`${JSON.stringify(value)}\n`);
 }
 
-async function forward(frame: string): Promise<void> {
-  let id: JsonRpcId | undefined;
+async function forward(frame) {
+  /** @type {string | number | null | undefined} */
+  let id;
   try {
-    const parsed: unknown = JSON.parse(frame);
+    const parsed = JSON.parse(frame);
     if (parsed !== null && typeof parsed === "object" && "id" in parsed) {
-      id = (parsed as { id?: JsonRpcId }).id;
+      id = parsed.id;
     }
   } catch {
     // A client that sent junk gets an answer it can parse, rather than silence.
@@ -88,7 +91,7 @@ async function forward(frame: string): Promise<void> {
 
 let buffer = "";
 
-function drain(final: boolean): void {
+function drain(final) {
   let newline = buffer.indexOf("\n");
   while (newline !== -1) {
     const frame = buffer.slice(0, newline).trim();
@@ -107,7 +110,7 @@ function drain(final: boolean): void {
 }
 
 process.stdin.setEncoding("utf8");
-process.stdin.on("data", (chunk: string) => {
+process.stdin.on("data", (chunk) => {
   buffer += chunk;
   drain(false);
 });
@@ -115,6 +118,6 @@ process.stdin.on("data", (chunk: string) => {
 // explicit exit: the process ends once stdin is done and every request in flight
 // has been answered.
 process.stdin.on("end", () => drain(true));
-process.stdin.on("error", (error: Error) => {
+process.stdin.on("error", (error) => {
   process.stderr.write(`[shingou-mcp-stdio] stdin: ${error.message}\n`);
 });

@@ -69,7 +69,7 @@ function run(
 ): Promise<{ lines: string[]; stderr: string; code: number | null }> {
   const child = spawn(
     process.execPath,
-    ["--disable-warning=ExperimentalWarning", "src/stdio-proxy.ts"],
+    ["src/stdio-proxy.mjs"],
     { env: { ...process.env, SHINGOU_API_KEY: "", ...env }, stdio: ["pipe", "pipe", "pipe"] },
   );
 

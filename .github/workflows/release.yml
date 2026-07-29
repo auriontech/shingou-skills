@@ -1,0 +1,39 @@
+# Publishes to npm over OIDC. No token is stored anywhere: `npm trust github`
+# registered THIS filename as the trusted publisher for the package, so renaming
+# this file revokes its own permission to publish.
+#
+# Two triggers on purpose. Publishing a GitHub release is the normal path, so an
+# npm version always has a release next to it. workflow_dispatch is the recovery
+# path for when a release exists and the publish failed.
+name: release
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      # The whole point: this is what mints the OIDC token npm verifies.
+      id-token: write
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+
+      # Trusted publishing needs npm >= 11.5.1, which is newer than the npm
+      # bundled with some Node images. Pinning to latest is cheaper than
+      # discovering the floor on a release day.
+      - run: npm install -g npm@latest
+
+      # The bridge has no dependencies, so there is nothing to install and the
+      # hermetic suite is the only gate that can fail here.
+      - run: node --test test/proxy.test.ts
+
+      - run: npm publish --access public

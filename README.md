@@ -13,7 +13,7 @@ key is what removes the 24h delay outside the live majors.
 | --- | --- |
 | [`plugins/shingou/skills/shingou-api/`](plugins/shingou/skills/shingou-api/) | The skill: SKILL.md + full API reference + worked flows |
 | MCP endpoint | `https://api.shingou.io/mcp` — the same API as callable tools |
-| [`src/stdio-proxy.ts`](src/stdio-proxy.ts) | Packaged stdio server, for hosts that launch a local process instead of connecting to a remote one |
+| [`src/stdio-proxy.mjs`](src/stdio-proxy.mjs) | Packaged stdio server, for hosts that launch a local process instead of connecting to a remote one |
 
 ## Install
 
@@ -68,18 +68,26 @@ claude.ai remote connectors (OAuth) are planned.
 
 Streamable HTTP is the way in, and every client above uses it. Two places cannot: hosts that
 only launch a local process, and directories that index a server by building it and speaking
-MCP to its stdin. [`src/stdio-proxy.ts`](src/stdio-proxy.ts) bridges both to the same remote
+MCP to its stdin. [`src/stdio-proxy.mjs`](src/stdio-proxy.mjs) bridges both to the same remote
 endpoint. No dependencies, one HTTP POST per JSON-RPC message.
 
+Published to npm, so a host that launches a local process needs no clone:
+
 ```bash
-docker build -t shingou-mcp-stdio .
-docker run -i --rm -e SHINGOU_API_KEY=sk_live_... shingou-mcp-stdio
+claude mcp add shingou -- npx -y @auriontech/shingou-mcp-stdio
 ```
 
-Node 24+ runs the TypeScript entrypoint directly, with no build step:
+No build step, no `dist/`, no dependencies: the entrypoint is plain JavaScript and runs on
+Node 18 or newer. It was TypeScript until 0.3.1, which cannot work from an installed package,
+because Node refuses to strip types for anything under `node_modules` on every version.
+
+From a clone or an image instead:
 
 ```bash
-SHINGOU_API_KEY=sk_live_... node src/stdio-proxy.ts
+SHINGOU_API_KEY=sk_live_... node src/stdio-proxy.mjs
+
+docker build -t shingou-mcp-stdio .
+docker run -i --rm -e SHINGOU_API_KEY=sk_live_... shingou-mcp-stdio
 ```
 
 `SHINGOU_MCP_URL` overrides the endpoint. **The key is optional**: `initialize`, `tools/list`
