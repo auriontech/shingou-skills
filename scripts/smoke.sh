@@ -2,7 +2,7 @@
 # Reproduces the check a packaged-server directory runs against this image: launch
 # it, speak MCP to its stdin, confirm it introspects and serves a tool.
 #
-# Runs with no API key on purpose. `initialize`, `tools/list` and `list_symbols`
+# Runs with no API key on purpose. `initialize`, `tools/list` and `get_symbols`
 # answer unauthenticated upstream, which is exactly what lets a directory verify
 # the server without being handed a credential. Export SHINGOU_API_KEY to also
 # exercise a data tool.
@@ -33,7 +33,7 @@ run() {
   echo '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-06-18","capabilities":{},"clientInfo":{"name":"smoke","version":"0"}}}'
   echo '{"jsonrpc":"2.0","method":"notifications/initialized"}'
   echo '{"jsonrpc":"2.0","id":2,"method":"tools/list","params":{}}'
-  echo '{"jsonrpc":"2.0","id":3,"method":"tools/call","params":{"name":"list_symbols","arguments":{}}}'
+  echo '{"jsonrpc":"2.0","id":3,"method":"tools/call","params":{"name":"get_symbols","arguments":{}}}'
 } | run >"$OUT"
 
 # Three requests and one notification went in. A notification must produce no
@@ -56,9 +56,9 @@ tools="$(jq -rs 'map(select(.id == 2)) | .[0].result.tools | length' "$OUT")"
 [ "$tools" -eq 4 ] || fail "expected 4 tools from tools/list, got $tools"
 
 jq -es 'map(select(.id == 3)) | .[0].result.content[0].text | contains("BTC-USD")' "$OUT" >/dev/null ||
-  fail "list_symbols did not return symbols without a key"
+  fail "get_symbols did not return symbols without a key"
 
-echo "ok: introspection and list_symbols pass with no credential ($tools tools)"
+echo "ok: introspection and get_symbols pass with no credential ($tools tools)"
 
 if [ -n "${SHINGOU_API_KEY:-}" ]; then
   echo '{"jsonrpc":"2.0","id":4,"method":"tools/call","params":{"name":"get_sentiment","arguments":{"symbols":["BTC-USD"]}}}' |

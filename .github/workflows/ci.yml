@@ -1,0 +1,23 @@
+# Hermetic: no network, no Docker, no API key. Everything this asserts is the
+# framing contract between stdin, HTTP and stdout, which is what actually breaks
+# in a stdio server. The live endpoint is checked by canary.yml on a schedule,
+# because a failure there means the API moved, not that the bridge regressed —
+# and that difference should not be able to block a pull request.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+      # No install step: the package has zero dependencies, which is the property
+      # that lets a directory build this image offline.
+      - run: node --test test/proxy.test.ts

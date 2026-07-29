@@ -26,7 +26,7 @@ const headers: Record<string, string> = {
   accept: "application/json, text/event-stream",
   "user-agent": `shingou-mcp-stdio/${VERSION}`,
 };
-// `initialize`, `tools/list` and `list_symbols` all answer without a key, which
+// `initialize`, `tools/list` and `get_symbols` all answer without a key, which
 // is what lets a directory verify this server without being handed a credential.
 // Only send the header when there is something in it.
 if (API_KEY) headers["x-api-key"] = API_KEY;

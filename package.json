@@ -9,6 +9,9 @@
   "bin": {
     "shingou-mcp-stdio": "./src/stdio-proxy.ts"
   },
+  "scripts": {
+    "test": "node --test test/proxy.test.ts"
+  },
   "engines": {
     "node": ">=24"
   },

@@ -49,7 +49,7 @@ Point your agent at
 ## MCP
 
 Connect the Shingou API as tools (`get_sentiment`, `get_sentiment_history`, `get_events`,
-`list_symbols`) over Streamable HTTP. **The Claude Code plugin configures this
+`get_symbols`) over Streamable HTTP. **The Claude Code plugin configures this
 automatically** — with `SHINGOU_API_KEY` exported, the `shingou` MCP server is ready after
 `/plugin install`. To connect without the plugin:
 
@@ -80,9 +80,20 @@ SHINGOU_API_KEY=sk_live_... node src/stdio-proxy.ts
 ```
 
 `SHINGOU_MCP_URL` overrides the endpoint. **The key is optional**: `initialize`, `tools/list`
-and `list_symbols` all answer without one, so a client can discover the tools before the user
-has a key. The data tools need it. `scripts/smoke.sh` runs the full handshake against a built
-image and checks every frame.
+and `get_symbols` all answer without one, so a client can discover the tools before the user
+has a key. The data tools need it.
+
+Two layers of checks, split by what a failure would mean:
+
+```bash
+node --test test/proxy.test.ts   # hermetic: stub upstream, no network, no key
+scripts/smoke.sh                 # live: builds the image, talks to the real endpoint
+```
+
+The first is what CI runs, verbatim and with no package manager, because it fails only when
+the bridge regresses.
+`scripts/smoke.sh` runs on a daily schedule instead — it can go red because the API moved
+or a deploy is mid-flight, and that should not block a pull request.
 
 ## Quota math (free tier)
 

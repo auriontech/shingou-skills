@@ -1,0 +1,23 @@
+# The live half, deliberately kept out of CI. This builds the image and speaks
+# MCP to it against the real endpoint, with no credential — the same check a
+# packaged-server directory runs. It can fail for reasons that are not our fault
+# (the API moved, a deploy is mid-flight, the network), so it runs on a schedule
+# where that is a signal rather than on pull requests where it would be a gate.
+name: Canary
+
+on:
+  schedule:
+    # 06:20 UTC daily, offset off the hour so it never lands on an engine run.
+    - cron: "20 6 * * *"
+  workflow_dispatch:
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - run: docker build -t shingou-mcp-stdio .
+      # No SHINGOU_API_KEY on purpose: introspection and get_symbols answer
+      # unauthenticated, so this proves the unauthenticated path a directory
+      # depends on. The data tools are covered by the API's own test suite.
+      - run: scripts/smoke.sh
