@@ -1,5 +1,5 @@
 {
-  "name": "shingou-mcp-stdio",
+  "name": "@auriontech/shingou-mcp-stdio",
   "version": "0.3.0",
   "description": "Stdio bridge to the Shingou remote MCP server",
   "license": "MIT",
