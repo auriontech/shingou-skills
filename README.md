@@ -10,6 +10,7 @@ key is what removes the 24h delay outside the live majors.
 | --- | --- |
 | [`plugins/shingou/skills/shingou-api/`](plugins/shingou/skills/shingou-api/) | The skill: SKILL.md + full API reference + worked flows |
 | MCP endpoint | `https://api.shingou.io/mcp` — the same API as callable tools |
+| [`src/stdio-proxy.ts`](src/stdio-proxy.ts) | Packaged stdio server, for hosts that launch a local process instead of connecting to a remote one |
 
 ## Install
 
@@ -58,8 +59,30 @@ claude mcp add --transport http shingou https://api.shingou.io/mcp \
 ```
 
 Requests made through MCP are attributed server-side — no User-Agent handling needed.
-claude.ai remote connectors (OAuth) are planned; for Claude Desktop use an
-HTTP-to-stdio shim such as [`mcp-remote`](https://www.npmjs.com/package/mcp-remote).
+claude.ai remote connectors (OAuth) are planned.
+
+### Packaged server (stdio)
+
+Streamable HTTP is the way in, and every client above uses it. Two places cannot: hosts that
+only launch a local process, and directories that index a server by building it and speaking
+MCP to its stdin. [`src/stdio-proxy.ts`](src/stdio-proxy.ts) bridges both to the same remote
+endpoint. No dependencies, one HTTP POST per JSON-RPC message.
+
+```bash
+docker build -t shingou-mcp-stdio .
+docker run -i --rm -e SHINGOU_API_KEY=sk_live_... shingou-mcp-stdio
+```
+
+Node 24+ runs the TypeScript entrypoint directly, with no build step:
+
+```bash
+SHINGOU_API_KEY=sk_live_... node src/stdio-proxy.ts
+```
+
+`SHINGOU_MCP_URL` overrides the endpoint. **The key is optional**: `initialize`, `tools/list`
+and `list_symbols` all answer without one, so a client can discover the tools before the user
+has a key. The data tools need it. `scripts/smoke.sh` runs the full handshake against a built
+image and checks every frame.
 
 ## Quota math (free tier)
 
