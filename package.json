@@ -1,6 +1,7 @@
 {
   "name": "@auriontech/shingou-mcp-stdio",
-  "version": "0.3.1",
+  "version": "0.3.2",
+  "mcpName": "io.shingou/sentiment",
   "description": "Stdio bridge to the Shingou remote MCP server",
   "license": "MIT",
   "repository": "https://github.com/auriontech/shingou-skills",
