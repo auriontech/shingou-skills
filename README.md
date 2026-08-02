@@ -20,7 +20,7 @@ key is what removes the 24h delay outside the live majors.
 ### Claude Code (plugin)
 
 ```
-/plugin marketplace add auriontech/shingou-skills
+/plugin marketplace add shingou-io/shingou-skills
 /plugin install shingou@shingou-skills
 ```
 
@@ -74,7 +74,7 @@ endpoint. No dependencies, one HTTP POST per JSON-RPC message.
 Published to npm, so a host that launches a local process needs no clone:
 
 ```bash
-claude mcp add shingou -- npx -y @auriontech/shingou-mcp-stdio
+claude mcp add shingou -- npx -y @shingou-io/mcp-stdio
 ```
 
 No build step, no `dist/`, no dependencies: the entrypoint is plain JavaScript and runs on
