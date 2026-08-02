@@ -1,6 +1,6 @@
 # Shingou API reference
 
-> Snapshot as of 2026-07. Canonical live reference: [shingou.io/llms-full.txt](https://shingou.io/llms-full.txt)
+> Snapshot as of 2026-08. Canonical live reference: [shingou.io/llms-full.txt](https://shingou.io/llms-full.txt)
 > — prefer it if anything here looks stale.
 
 Base URL `https://api.shingou.io/v1`. Auth on every `/v1` endpoint:
@@ -40,7 +40,7 @@ Point-in-time series for backtesting. Bucket start = as-of time; **no lookahead*
 | Param | Type | Required | Notes |
 | --- | --- | --- | --- |
 | `symbol` | string | yes | Single symbol. |
-| `from` | ISO 8601 | yes | Clamped to your plan's history window and to ≤ 90 days before `to`. |
+| `from` | ISO 8601 | yes | Clamped to your plan's history window and to your plan's per-request span (see Plans). |
 | `to` | ISO 8601 | yes | On delayed plans, capped at the freshness delay for non-live symbols. |
 | `interval` | enum | no (default `1h`) | `1m` `5m` `15m` `1h` `4h` `1d`. |
 
@@ -80,13 +80,18 @@ Kill-switch trio used by the reference integrations: `hack_exploit`, `regulation
 
 ## Plans
 
-| Plan | Price | Requests/day | Burst/min | History window | Freshness |
-| --- | --- | --- | --- | --- | --- |
-| free | $0 | 1,000 | 30 | 7 days | Live on BTC-USD/ETH-USD/SOL-USD; everything else 24h-delayed |
-| starter | $24/mo | 50,000 | 120 | 90 days | Live, full universe |
-| pro | $249/mo | 500,000 | 600 | 730 days | Live, full universe |
+| Plan | Price | Requests/day | Burst/min | History window | Per request | Freshness |
+| --- | --- | --- | --- | --- | --- | --- |
+| free | $0 | 1,000 | 30 | 1 day | 90 days | Live on BTC-USD/ETH-USD/SOL-USD; everything else 24h-delayed |
+| starter | $24/mo | 50,000 | 120 | 90 days | 90 days | Live, full universe |
+| quant | $79/mo | 50,000 | 120 | 365 days | 365 days | Live, full universe |
+| pro | $249/mo | 500,000 | 600 | 730 days | 730 days | Live, full universe |
 
-History is additionally capped at **90 days per request** on every plan (page longer ranges).
+`History window` is how far back the plan may reach. `Per request` is how much of it one call
+may span, so page longer ranges. Free gives one day on purpose: enough for the endpoint to
+return a real series, not enough to backtest on. **History is a clamp, not a promise of data** —
+the corpus began 2026-04-06, and reaching past it returns an empty range, never an error.
+
 Free tier is licensed for personal/evaluation/non-commercial use; paid tiers include commercial
 use ([shingou.io/terms](https://shingou.io/terms)).
 

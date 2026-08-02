@@ -37,8 +37,12 @@ curl "https://api.shingou.io/v1/history/sentiment?symbol=ETH-USD&from=2026-06-04
 
 - `bucket` is the **as-of** time: when joining to candles, use the signal for decisions strictly
   *after* the bucket time — that is the no-lookahead contract.
-- Check the echoed `from`/`to`: the server clamps to your plan window (7d free / 90d starter /
-  730d pro) and to 90 days per request. If you got less than you asked for, say so.
+- Check the echoed `from`/`to`: the server clamps to your plan window (1d free / 90d starter /
+  365d quant / 730d pro) and to the plan's per-request span. If you got less than you asked for,
+  say so.
+- **On a free key this 30-day call comes back as one day.** That is the clamp working, not an
+  error. Free history exists so the endpoint returns a real series; a backtest needs a paid key,
+  and `quant` is the tier bought for depth.
 - Split results by `reconstructed`: `true` buckets are archival reconstruction, a research
   artifact — report metrics on live-collected buckets separately, or at minimum disclose the mix.
 - Frame any result as the signal **filtering or sizing a base strategy, not generating entries**.

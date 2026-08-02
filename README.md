@@ -3,11 +3,13 @@
 [![smithery badge](https://smithery.ai/badge/adol/shingou)](https://smithery.ai/servers/adol/shingou)
 [![Glama score](https://glama.ai/mcp/servers/shingou-io/shingou-skills/badges/score.svg)](https://glama.ai/mcp/servers/shingou-io/shingou-skills)
 
-Plug the [Shingou](https://shingou.io) news-sentiment API into Claude or any AI agent —
-a skill that teaches the agent to use the API correctly (auth, symbols, quotas, and honest
-framing of an hourly signal), plus MCP tools for direct access. Works instantly with a
-**free API key** ([shingou.io/dashboard](https://shingou.io/dashboard), no card) — the paid
-key is what removes the 24h delay outside the live majors.
+Plug the [Shingou](https://shingou.io) point-in-time crypto market sentiment API into Claude or
+any AI agent. This repo is a skill that teaches the agent to use the API correctly (auth,
+symbols, quotas, and honest framing of an hourly signal), plus MCP tools for direct access.
+
+Works instantly with a **free API key**
+([shingou.io/dashboard](https://shingou.io/dashboard), no card). The paid key is what removes
+the 24h delay outside the live majors, and what buys history depth.
 
 | Path | What it is |
 | --- | --- |
@@ -112,14 +114,23 @@ or a deploy is mid-flight, and that should not block a pull request.
 `/v1/sentiment` call batches up to 50 symbols — so even polling the full universe every hour
 costs 24 requests a day. There is no reason to poll faster.
 
+Free history reaches back **one day**, which is enough for `/v1/history/sentiment` to return a
+real series and not enough to backtest on. Depth is the paid axis: 90 days on `starter`, 365 on
+`quant`, 730 on `pro`.
+
 ## What the signal is (and is not)
 
-One signal per asset per hour: `score ∈ [-1, 1]`, `confidence ∈ [0, 1]`, a `direction` call,
-dominant `event` types, and the source articles behind it. Measured performance — including
-the negative results — is published at [shingou.io/research](https://shingou.io/research).
-The honest uses are **filter**, **sizing**, and **kill-switch** — never an entry generator
-on its own. The skill instructs agents to disclose signal age (free-tier delays) and
-`reconstructed` history buckets rather than hide them.
+**Point-in-time first.** Every history bucket carries an as-of timestamp and a `reconstructed`
+flag, and the bucket's hash is committed to a public append-only log at publish time. So no
+lookahead is something you can check, not something we ask you to believe. The log is at
+[shingou-io/shingou-signal-log](https://github.com/shingou-io/shingou-signal-log).
+
+The signal itself is one per asset per hour: `score ∈ [-1, 1]`, `confidence ∈ [0, 1]`, a
+`direction` call, dominant `event` types, and the source articles behind it. Measured
+performance, including the negative results, is published at
+[shingou.io/research](https://shingou.io/research). The honest uses are **filter**, **sizing**,
+and **kill-switch**. Never an entry generator on its own. The skill instructs agents to disclose
+signal age (free-tier delays) and `reconstructed` history buckets rather than hide them.
 
 ## License
 

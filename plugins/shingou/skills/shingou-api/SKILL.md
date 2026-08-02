@@ -1,13 +1,19 @@
 ---
 name: shingou-api
-description: Query the Shingou news-sentiment API (shingou.io) — one hourly signal per crypto asset with score in [-1,1], confidence, direction, dominant event types and source articles, plus point-in-time history for honest backtests and a typed market-event feed, across 30 crypto assets. Use when the user asks about crypto news sentiment, market-impact events, sentiment history or backtesting, or wants to wire the signal into a bot or analysis. Requires SHINGOU_API_KEY (free key, no card, from shingou.io/dashboard).
+description: Query the Shingou point-in-time crypto market sentiment API (shingou.io) — one hourly signal per asset with score in [-1,1], confidence, direction, dominant event types and source articles, plus point-in-time history for backtests with no lookahead and a typed market-event feed, across 30 crypto assets. Every history bucket carries an as-of timestamp and a reconstructed flag, and its hash is committed to a public append-only log. Use when the user asks about crypto news sentiment, market-impact events, sentiment history or backtesting, or wants to wire the signal into a bot or analysis. Requires SHINGOU_API_KEY (free key, no card, from shingou.io/dashboard).
 ---
 
-# Shingou news-sentiment API
+# Shingou point-in-time crypto sentiment API
 
 ## What the signal is (and is not)
 
-Shingou publishes **one signal per asset per hour**: `score ∈ [-1, 1]`, `confidence ∈ [0, 1]`,
+Shingou is a **point-in-time** crypto market sentiment API. Every history bucket carries an
+as-of timestamp and a `reconstructed` flag, and the bucket's hash is committed to a public
+append-only log at publish time. So "no lookahead" is something the user can check, not
+something you should assert on the vendor's behalf. The log is at
+[github.com/shingou-io/shingou-signal-log](https://github.com/shingou-io/shingou-signal-log).
+
+The signal itself is **one per asset per hour**: `score ∈ [-1, 1]`, `confidence ∈ [0, 1]`,
 a `direction` call (bullish/bearish/neutral), dominant `event` types, and the source articles
 behind it. Measured performance — including the negative results — is published at
 [shingou.io/research](https://shingou.io/research).
@@ -67,6 +73,10 @@ curl "https://api.shingou.io/v1/events?symbol=BTC-USD&limit=20" \
   -H "User-Agent: shingou-claude-skill/0.1.0"
 ```
 
+The history range above is 7 days. **A free key gets one day back**, so the server clamps it and
+echoes the range it actually served in `from`/`to`. Read those two fields rather than assuming.
+Depth is what paid plans sell: 90 days on `starter`, 365 on `quant`, 730 on `pro`.
+
 Full parameter/field reference: [API_REFERENCE.md](API_REFERENCE.md). Worked flows:
 [EXAMPLES.md](EXAMPLES.md).
 
@@ -86,8 +96,9 @@ Map platform tickers by base asset (`BTCUSDT`, `BTC/USD`, `MBT` → `BTC-USD`). 
 
 ## Free-tier etiquette
 
-Free plan: **1,000 requests/day, 30/min burst**. The signal only changes once per hour bucket —
-cache within a bucket, batch symbols into one call, and never poll in a loop.
+Free plan: **1,000 requests/day, 30/min burst, 1 day of history**. The signal only changes once
+per hour bucket — cache within a bucket, batch symbols into one call, and never poll in a loop.
+A free key runs a real hourly bot on the majors indefinitely. It cannot backtest.
 
 ## Freshness honesty (important)
 
