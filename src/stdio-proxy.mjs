@@ -27,7 +27,7 @@ const API_KEY = process.env.SHINGOU_API_KEY ?? "";
 // says >=18) or startup file I/O, for a User-Agent string. The parity test in
 // `test/proxy.test.ts` is what makes the duplication safe; 0.3.2 shipped to npm
 // still announcing 0.3.1, which is the drift that bought the test.
-const VERSION = "0.4.0";
+const VERSION = "0.4.1";
 
 const headers = {
   "content-type": "application/json",
