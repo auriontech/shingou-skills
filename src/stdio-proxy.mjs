@@ -21,7 +21,13 @@
 
 const ENDPOINT = process.env.SHINGOU_MCP_URL || "https://api.shingou.io/mcp";
 const API_KEY = process.env.SHINGOU_API_KEY ?? "";
-const VERSION = "0.3.1";
+// Must equal `package.json`'s version — it goes out on every request and is how
+// usage attribution reads which build is talking. Hand-maintained because
+// deriving it would cost either an import attribute (Node 22+, and `engines`
+// says >=18) or startup file I/O, for a User-Agent string. The parity test in
+// `test/proxy.test.ts` is what makes the duplication safe; 0.3.2 shipped to npm
+// still announcing 0.3.1, which is the drift that bought the test.
+const VERSION = "0.3.2";
 
 const headers = {
   "content-type": "application/json",

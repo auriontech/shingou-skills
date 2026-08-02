@@ -11,6 +11,7 @@
  */
 
 import { spawn } from "node:child_process";
+import { readFileSync } from "node:fs";
 import { createServer, type IncomingMessage, type Server, type ServerResponse } from "node:http";
 import test from "node:test";
 import assert from "node:assert/strict";
@@ -156,6 +157,22 @@ test("an upstream failure on a notification stays silent", async () => {
   try {
     const { lines } = await run([notification("boom")], { SHINGOU_MCP_URL: stub.url });
     assert.equal(lines.length, 0, "there is no id to answer on, so inventing one would be our own protocol error");
+  } finally {
+    await stub.close();
+  }
+});
+
+test("the User-Agent on the wire carries the published package version", async () => {
+  // The bridge hardcodes its version, so this asserts the *sent header* rather
+  // than the source constant: what attribution reads is the wire, and a test
+  // that greps the file would pass on a constant that never reaches a request.
+  // 0.3.2 shipped to npm announcing 0.3.1 with nothing to catch it — this is
+  // that gap closed.
+  const { version } = JSON.parse(readFileSync(new URL("../package.json", import.meta.url), "utf8"));
+  const stub = await startStub();
+  try {
+    await run([request(1, "tools/list")], { SHINGOU_MCP_URL: stub.url });
+    assert.equal(stub.received[0]!.headers["user-agent"], `shingou-mcp-stdio/${version}`);
   } finally {
     await stub.close();
   }
