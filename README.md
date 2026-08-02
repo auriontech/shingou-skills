@@ -1,7 +1,7 @@
 # Shingou skills
 
 [![smithery badge](https://smithery.ai/badge/adol/shingou)](https://smithery.ai/servers/adol/shingou)
-[![Glama score](https://glama.ai/mcp/servers/auriontech/shingou-skills/badges/score.svg)](https://glama.ai/mcp/servers/auriontech/shingou-skills)
+[![Glama score](https://glama.ai/mcp/servers/shingou-io/shingou-skills/badges/score.svg)](https://glama.ai/mcp/servers/shingou-io/shingou-skills)
 
 Plug the [Shingou](https://shingou.io) news-sentiment API into Claude or any AI agent —
 a skill that teaches the agent to use the API correctly (auth, symbols, quotas, and honest
