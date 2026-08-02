@@ -4,7 +4,10 @@
   "mcpName": "io.shingou/sentiment",
   "description": "Stdio bridge to the Shingou remote MCP server",
   "license": "MIT",
-  "repository": "https://github.com/shingou-io/shingou-skills",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shingou-io/shingou-skills.git"
+  },
   "homepage": "https://shingou.io/docs/agents",
   "type": "module",
   "bin": {
