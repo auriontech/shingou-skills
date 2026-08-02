@@ -1,6 +1,6 @@
 {
   "name": "@shingou-io/mcp-stdio",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "mcpName": "io.shingou/sentiment",
   "description": "Stdio bridge to the Shingou remote MCP server",
   "license": "MIT",
